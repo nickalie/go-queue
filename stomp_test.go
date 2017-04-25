@@ -24,7 +24,7 @@ func (suite *StompJSONTestSuite) SetupTest() {
 }
 
 func TestStompJSONTestSuite(t *testing.T) {
-	// TODO for some reason json tests won't pass on circleci
+	// TODO find a way to run stomp server on circleci
 	if _, ok := os.LookupEnv("CIRCLECI"); !ok {
 		suite.Run(t, new(StompJSONTestSuite))
 	}
@@ -46,5 +46,8 @@ func (suite *StompGOBTestSuite) SetupTest() {
 }
 
 func TestStompGOBTestSuite(t *testing.T) {
-	suite.Run(t, new(StompGOBTestSuite))
+	// TODO find a way to run stomp server on circleci
+	if _, ok := os.LookupEnv("CIRCLECI"); !ok {
+		suite.Run(t, new(StompGOBTestSuite))
+	}
 }
