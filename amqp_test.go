@@ -1,9 +1,10 @@
 package queue
 
 import (
-	"testing"
-	"github.com/stretchr/testify/suite"
 	"fmt"
+	"github.com/stretchr/testify/suite"
+	"os"
+	"testing"
 )
 
 type AMQPJSONTestSuite struct {
@@ -11,7 +12,8 @@ type AMQPJSONTestSuite struct {
 }
 
 func (suite *AMQPJSONTestSuite) SetupTest() {
-	b, err := NewAMQPBackend("amqp://guest:guest@192.168.99.100:5672")
+	host, _ := os.LookupEnv("DOCKER_HOST")
+	b, err := NewAMQPBackend("amqp://guest:guest@" + host + ":5672")
 
 	if err != nil {
 		fmt.Printf("amqp err: %v\n", err)
@@ -30,7 +32,8 @@ type AMQPGOBTestSuite struct {
 }
 
 func (suite *AMQPGOBTestSuite) SetupTest() {
-	b, err := NewAMQPBackend("amqp://guest:guest@192.168.99.100:5672")
+	host, _ := os.LookupEnv("DOCKER_HOST")
+	b, err := NewAMQPBackend("amqp://guest:guest@" + host + ":5672")
 
 	if err != nil {
 		fmt.Printf("amqp err: %v\n", err)

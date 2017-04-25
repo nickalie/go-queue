@@ -3,6 +3,7 @@ package queue
 import (
 	"fmt"
 	"github.com/stretchr/testify/suite"
+	"os"
 	"testing"
 )
 
@@ -11,7 +12,8 @@ type StompJSONTestSuite struct {
 }
 
 func (suite *StompJSONTestSuite) SetupTest() {
-	b, err := NewStompBackend("192.168.99.100:61613")
+	host, _ := os.LookupEnv("DOCKER_HOST")
+	b, err := NewStompBackend(host + ":61613")
 
 	if err != nil {
 		fmt.Printf("stomp err: %v\n", err)
@@ -30,7 +32,8 @@ type StompGOBTestSuite struct {
 }
 
 func (suite *StompGOBTestSuite) SetupTest() {
-	b, err := NewStompBackend("192.168.99.100:61613")
+	host, _ := os.LookupEnv("DOCKER_HOST")
+	b, err := NewStompBackend(host + ":61613")
 
 	if err != nil {
 		fmt.Printf("stomp err: %v\n", err)

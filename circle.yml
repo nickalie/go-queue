@@ -1,0 +1,14 @@
+machine:
+  services:
+    - docker
+  environment:
+    DOCKER_HOST: localhost
+test:
+  pre:
+    - docker run -p 6379:6379 -d redis:alpine
+    - docker run -p 5672:5672 -d rabbitmq:alpine
+    - docker run -p 61613:61613 -d byteflair/rabbitmq-stomp
+  override:
+      - go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+  post:
+    - bash <(curl -s https://codecov.io/bash)

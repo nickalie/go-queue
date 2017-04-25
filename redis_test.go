@@ -3,6 +3,7 @@ package queue
 import (
 	"fmt"
 	"github.com/stretchr/testify/suite"
+	"os"
 	"testing"
 )
 
@@ -11,7 +12,8 @@ type RedisJSONTestSuite struct {
 }
 
 func (suite *RedisJSONTestSuite) SetupTest() {
-	b, err := NewRedisBackend("redis://localhost:6379")
+	host, _ := os.LookupEnv("DOCKER_HOST")
+	b, err := NewRedisBackend("redis://" + host + ":6379")
 
 	if err != nil {
 		fmt.Printf("redis err: %v\n", err)
@@ -30,7 +32,8 @@ type RedisGOBTestSuite struct {
 }
 
 func (suite *RedisGOBTestSuite) SetupTest() {
-	b, err := NewRedisBackend("redis://localhost:6379")
+	host, _ := os.LookupEnv("DOCKER_HOST")
+	b, err := NewRedisBackend("redis://" + host + ":6379")
 
 	if err != nil {
 		fmt.Printf("redis err: %v\n", err)
