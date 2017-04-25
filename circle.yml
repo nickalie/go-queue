@@ -1,8 +1,6 @@
 machine:
   services:
     - docker
-  environment:
-    DOCKER_HOST: localhost
 test:
   pre:
     - docker run -p 6379:6379 -d redis:alpine
