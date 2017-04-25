@@ -12,7 +12,7 @@ type StompJSONTestSuite struct {
 }
 
 func (suite *StompJSONTestSuite) SetupTest() {
-	host, _ := os.LookupEnv("DOCKER_HOST")
+	host, _ := os.LookupEnv("TESTS_HOST")
 	b, err := NewStompBackend(host + ":61613")
 
 	if err != nil {
@@ -32,7 +32,7 @@ type StompGOBTestSuite struct {
 }
 
 func (suite *StompGOBTestSuite) SetupTest() {
-	host, _ := os.LookupEnv("DOCKER_HOST")
+	host, _ := os.LookupEnv("TESTS_HOST")
 	b, err := NewStompBackend(host + ":61613")
 
 	if err != nil {

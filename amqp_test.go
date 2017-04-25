@@ -12,7 +12,7 @@ type AMQPJSONTestSuite struct {
 }
 
 func (suite *AMQPJSONTestSuite) SetupTest() {
-	host, _ := os.LookupEnv("DOCKER_HOST")
+	host, _ := os.LookupEnv("TESTS_HOST")
 	b, err := NewAMQPBackend("amqp://guest:guest@" + host + ":5672")
 
 	if err != nil {
@@ -32,7 +32,7 @@ type AMQPGOBTestSuite struct {
 }
 
 func (suite *AMQPGOBTestSuite) SetupTest() {
-	host, _ := os.LookupEnv("DOCKER_HOST")
+	host, _ := os.LookupEnv("TESTS_HOST")
 	b, err := NewAMQPBackend("amqp://guest:guest@" + host + ":5672")
 
 	if err != nil {

@@ -12,7 +12,7 @@ type RedisJSONTestSuite struct {
 }
 
 func (suite *RedisJSONTestSuite) SetupTest() {
-	host, _ := os.LookupEnv("DOCKER_HOST")
+	host, _ := os.LookupEnv("TESTS_HOST")
 	b, err := NewRedisBackend("redis://" + host + ":6379")
 
 	if err != nil {
@@ -32,7 +32,7 @@ type RedisGOBTestSuite struct {
 }
 
 func (suite *RedisGOBTestSuite) SetupTest() {
-	host, _ := os.LookupEnv("DOCKER_HOST")
+	host, _ := os.LookupEnv("TESTS_HOST")
 	b, err := NewRedisBackend("redis://" + host + ":6379")
 
 	if err != nil {
