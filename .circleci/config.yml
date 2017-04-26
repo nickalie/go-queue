@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    working_directory: /$GOPATH/src/github/nickalie/go-queue
+    working_directory: /go/src/github/nickalie/go-queue
     docker:
       - image: golang:alpine
         environment:
@@ -10,7 +10,7 @@ jobs:
       - image: redis:alpine
       - image: rabbitmq:alpine
     steps:
-      - run: apk --no-cache add git bash curl
+      - run: apk --no-cache add git bash curl openssh
       - checkout
       - run: go get -v ./...
       - run: go test -v -coverprofile=coverage.txt -covermode=atomic ./...
