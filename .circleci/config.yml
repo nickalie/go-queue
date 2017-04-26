@@ -10,8 +10,8 @@ jobs:
       - image: redis:alpine
       - image: rabbitmq:alpine
     steps:
-      - run: apk --no-cache add git bash curl openssh
+      - run: apk --no-cache add git bash wget openssh
       - checkout
       - run: go get -t -v ./...
       - run: go test -v -coverprofile=coverage.txt -covermode=atomic ./...
-      - run: bash <(curl -s https://codecov.io/bash)
+      - run: wget https://codecov.io/bash -O codecov.sh && chmod +x codecov.sh && ./codecov.sh
