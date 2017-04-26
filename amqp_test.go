@@ -14,7 +14,7 @@ type AMQPTestSuite struct {
 
 func (suite *AMQPTestSuite) SetupTest() {
 	host, _ := os.LookupEnv("TESTS_HOST")
-	b, err := NewAMQPBackend("amqp://guest:guest@" + host + ":5672")
+	b, err := NewAMQPBackend("amqp://" + host + ":5672")
 
 	if err != nil {
 		fmt.Printf("amqp err: %v\n", err)
