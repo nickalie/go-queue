@@ -2,6 +2,7 @@ package queue
 
 import (
 	"fmt"
+	"github.com/go-stomp/stomp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"os"
@@ -14,7 +15,7 @@ type StompTestSuite struct {
 
 func (suite *StompTestSuite) SetupTest() {
 	host, _ := os.LookupEnv("TESTS_HOST")
-	b, err := NewStompBackend(host + ":61613")
+	b, err := NewStompBackend(host+":61613", stomp.ConnOpt.Host("/"))
 
 	if err != nil {
 		fmt.Printf("stomp err: %v\n", err)
@@ -24,10 +25,7 @@ func (suite *StompTestSuite) SetupTest() {
 }
 
 func TestStompTestSuite(t *testing.T) {
-	//TODO find a way to run stomp on circleci
-	if _, ok := os.LookupEnv("CIRCLECI"); !ok {
-		suite.Run(t, new(StompTestSuite))
-	}
+	suite.Run(t, new(StompTestSuite))
 }
 
 func TestInvalidStompUrl(t *testing.T) {

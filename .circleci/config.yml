@@ -8,7 +8,7 @@ jobs:
           TESTS_HOST: localhost
           CIRCLECI: true
       - image: redis:alpine
-      - image: rabbitmq:alpine
+      - image: itzg/rabbitmq-stomp
     steps:
       - run: apk --no-cache add git bash wget openssh
       - checkout
