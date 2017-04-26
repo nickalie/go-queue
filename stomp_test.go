@@ -2,10 +2,10 @@ package queue
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"os"
 	"testing"
-	"github.com/stretchr/testify/assert"
 )
 
 type StompTestSuite struct {

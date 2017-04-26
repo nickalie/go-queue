@@ -1,0 +1,19 @@
+version: 2
+jobs:
+  build:
+    working_directory: $GOPATH/src/github/nickalie/go-queue
+    docker:
+      - image: golang:alpine
+        environment:
+          TESTS_HOST: localhost
+      - image: redis:alpine
+      - image: rabbitmq:alpine
+      - image: byteflair/rabbitmq-stomp
+        environment:
+          RABBITMQ_DEFAULT_VHOST: 127.0.0.1
+    steps:
+      - run: apk --no-cache add git bash curl
+      - checkout
+      - run: go get -v ./...
+      - run: go test -v -coverprofile=coverage.txt -covermode=atomic ./...
+      - run: bash <(curl -s https://codecov.io/bash)
