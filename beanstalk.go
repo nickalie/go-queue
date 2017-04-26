@@ -114,6 +114,8 @@ func (b *BeanstalkBackend) getConn() (*beanstalk.Conn, error) {
 func getBeanstalkPool(addr string) *pool.ObjectPool {
 	config := pool.NewDefaultPoolConfig()
 	config.MaxTotal = -1
+	config.SoftMinEvictableIdleTimeMillis = 1000 * 60
+	config.TimeBetweenEvictionRunsMillis = 1000 * 60
 	return pool.NewObjectPool(
 		pool.NewPooledObjectFactory(
 			func() (interface{}, error) {
