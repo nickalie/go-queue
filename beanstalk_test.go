@@ -28,7 +28,10 @@ func TestBeanstalkTestSuite(t *testing.T) {
 }
 
 func TestInvalidBeanstalkUrl(t *testing.T) {
-	b, err := NewAMQPBackend("https://google.com")
+	b, _ := NewBeanstalkBackend("google.com")
+	assert.NotNil(t, b)
+	err := b.Put(randString(10), randUser())
 	assert.NotNil(t, err)
-	assert.Nil(t, b)
+	err = b.Get(randString(10), &testUser{})
+	assert.NotNil(t, err)
 }
