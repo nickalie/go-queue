@@ -7,10 +7,10 @@ import (
 
 func TestNewJSONCodec(t *testing.T) {
 	c := NewJSONCodec()
-	expected := randUser()
+	expected := randMap(100)
 	js, err := c.Marshal(&expected)
 	assert.Nil(t, err)
-	var actual testUser
+	actual := make(map[string]interface{})
 	err = c.Unmarshal(js, &actual)
 	assert.Nil(t, err)
 	assert.Equal(t, expected, actual)
