@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    working_directory: $GOPATH/src/github/nickalie/go-queue
+    working_directory: /$GOPATH/src/github/nickalie/go-queue
     docker:
       - image: golang:alpine
         environment:
