@@ -70,7 +70,7 @@ func (b *AMQPBackend) Put(queueName string, value interface{}) error {
 }
 
 // Get removes the first element from a queue and put it in the value pointed to by v
-func (b *AMQPBackend) Get(queueName string, value interface{}) error {
+func (b *AMQPBackend) Get(queueName string, v interface{}) error {
 	ch, err := b.conn.Channel()
 
 	if err != nil {
@@ -108,5 +108,5 @@ func (b *AMQPBackend) Get(queueName string, value interface{}) error {
 
 	d := <-msgs
 
-	return b.codec.Unmarshal(d.Body, value)
+	return b.codec.Unmarshal(d.Body, v)
 }

@@ -79,7 +79,7 @@ func (b *FSBackend) Put(queueName string, value interface{}) error {
 }
 
 // Get removes the first element from a queue and put it in the value pointed to by v
-func (b *FSBackend) Get(queueName string, value interface{}) error {
+func (b *FSBackend) Get(queueName string, v interface{}) error {
 	dir := filepath.Join(b.path, queueName)
 
 	var fileName string
@@ -102,7 +102,7 @@ func (b *FSBackend) Get(queueName string, value interface{}) error {
 		})
 
 		if err == errFound {
-			err = b.readFile(l, fileName, value)
+			err = b.readFile(l, fileName, v)
 		} else {
 			err = errNotFound
 		}

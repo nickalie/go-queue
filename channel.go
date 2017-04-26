@@ -38,10 +38,10 @@ func (b *ChannelBackend) Put(queueName string, value interface{}) error {
 }
 
 // Get removes the first element from a queue and put it in the value pointed to by v
-func (b *ChannelBackend) Get(queueName string, value interface{}) error {
+func (b *ChannelBackend) Get(queueName string, v interface{}) error {
 	result := <-b.getChannel(queueName)
-	v := reflect.ValueOf(value)
-	v.Elem().Set(reflect.ValueOf(result))
+	value := reflect.ValueOf(v)
+	value.Elem().Set(reflect.ValueOf(result))
 	return nil
 }
 

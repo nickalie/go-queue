@@ -58,8 +58,8 @@ func (b *BuntBackend) Put(queueName string, value interface{}) error {
 }
 
 // Get removes the first element from a queue and put it in the value pointed to by v
-func (b *BuntBackend) Get(queueName string, value interface{}) error {
-	var v string
+func (b *BuntBackend) Get(queueName string, v interface{}) error {
+	var value string
 	var k string
 	for {
 		found := false
@@ -74,7 +74,7 @@ func (b *BuntBackend) Get(queueName string, value interface{}) error {
 				return err
 			}
 
-			v, err = tx.Delete(k)
+			value, err = tx.Delete(k)
 
 			return err
 		})
@@ -90,7 +90,7 @@ func (b *BuntBackend) Get(queueName string, value interface{}) error {
 		}
 	}
 
-	return b.codec.Unmarshal([]byte(v), value)
+	return b.codec.Unmarshal([]byte(value), v)
 }
 
 // Close closes buntdb

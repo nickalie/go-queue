@@ -46,12 +46,12 @@ func (b *RedisBackend) Put(queueName string, value interface{}) error {
 }
 
 // Get removes the first element from a queue and put it in the value pointed to by v
-func (b *RedisBackend) Get(queueName string, value interface{}) error {
+func (b *RedisBackend) Get(queueName string, v interface{}) error {
 	d, err := redis.ByteSlices(b.pool.Get().Do("BLPOP", queueName, 0))
 
 	if err != nil {
 		return err
 	}
 
-	return b.codec.Unmarshal(d[1], value)
+	return b.codec.Unmarshal(d[1], v)
 }

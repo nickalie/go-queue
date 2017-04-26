@@ -41,7 +41,7 @@ func (b *StompBackend) Put(queueName string, value interface{}) error {
 }
 
 // Get removes the first element from a queue and put it in the value pointed to by v
-func (b *StompBackend) Get(queueName string, value interface{}) error {
+func (b *StompBackend) Get(queueName string, v interface{}) error {
 	sub, err := b.conn.Subscribe(queueName, stomp.AckClientIndividual)
 
 	if err != nil {
@@ -56,5 +56,5 @@ func (b *StompBackend) Get(queueName string, value interface{}) error {
 		return err
 	}
 
-	return b.codec.Unmarshal(msg.Body, value)
+	return b.codec.Unmarshal(msg.Body, v)
 }

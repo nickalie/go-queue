@@ -3,14 +3,14 @@ jobs:
   build:
     working_directory: /go/src/github/nickalie/go-queue
     docker:
-      - image: golang:alpine
+      - image: golang
         environment:
           TESTS_HOST: localhost
           CIRCLECI: true
       - image: redis:alpine
       - image: itzg/rabbitmq-stomp
+      - image: schickling/beanstalkd
     steps:
-      - run: apk --no-cache add git bash wget openssh
       - checkout
       - run: go get -t -v ./...
       - run: go test -v -coverprofile=coverage.txt -covermode=atomic ./...

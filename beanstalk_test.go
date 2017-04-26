@@ -8,26 +8,26 @@ import (
 	"testing"
 )
 
-type AMQPTestSuite struct {
+type BeanstalkTestSuite struct {
 	baseSuite
 }
 
-func (suite *AMQPTestSuite) SetupTest() {
+func (suite *BeanstalkTestSuite) SetupTest() {
 	host, _ := os.LookupEnv("TESTS_HOST")
-	b, err := NewAMQPBackend("amqp://" + host + ":5672")
+	b, err := NewBeanstalkBackend(host + ":11300")
 
 	if err != nil {
-		fmt.Printf("amqp err: %v\n", err)
+		fmt.Printf("beanstalk err: %v\n", err)
 	}
 
 	Use(b)
 }
 
-func TestAMQPTestSuite(t *testing.T) {
-	suite.Run(t, new(AMQPTestSuite))
+func TestBeanstalkTestSuite(t *testing.T) {
+	suite.Run(t, new(BeanstalkTestSuite))
 }
 
-func TestInvalidAMQPUrl(t *testing.T) {
+func TestInvalidBeanstalkUrl(t *testing.T) {
 	b, err := NewAMQPBackend("https://google.com")
 	assert.NotNil(t, err)
 	assert.Nil(t, b)
