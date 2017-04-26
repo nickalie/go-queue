@@ -14,17 +14,17 @@ type RedisBackend struct {
 
 // NewRedisBackend creates new RedisBackend
 func NewRedisBackend(redisURL string) (*RedisBackend, error) {
-	return &RedisBackend{pool: &redis.Pool{
+	return NewRedisBackendWithPool(&redis.Pool{
 		MaxIdle:     3,
 		IdleTimeout: 240 * time.Second,
 		Dial:        func() (redis.Conn, error) { return redis.DialURL(redisURL) },
-	},
-		codec: NewGOBCodec()}, nil
+	}), nil
 }
 
 // NewRedisBackendWithPool creates new RedisBackend with provided redis.Pool
 func NewRedisBackendWithPool(pool *redis.Pool) *RedisBackend {
-	return &RedisBackend{pool: pool, codec: NewJSONCodec()}
+	b := &RedisBackend{pool: pool}
+	return b.Codec(NewGOBCodec())
 }
 
 // Codec sets codec to encode/decode objects in queues. GOBCodec is default.

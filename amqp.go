@@ -18,7 +18,9 @@ func NewAMQPBackend(url string) (*AMQPBackend, error) {
 		return nil, err
 	}
 
-	return &AMQPBackend{conn: conn, codec: NewGOBCodec()}, nil
+	b := &AMQPBackend{conn: conn}
+
+	return b.Codec(NewGOBCodec()), nil
 }
 
 // Codec sets codec to encode/decode objects in queues. GOBCodec is default.

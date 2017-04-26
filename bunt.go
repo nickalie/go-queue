@@ -24,7 +24,9 @@ func NewBuntBackend(path string) (*BuntBackend, error) {
 		return nil, err
 	}
 
-	return &BuntBackend{db: db, codec: NewGOBCodec(), interval: time.Second}, nil
+	b := &BuntBackend{db: db}
+
+	return b.Codec(NewGOBCodec()).Interval(time.Second), nil
 }
 
 // Codec sets codec to encode/decode objects in queues. GOBCodec is default.

@@ -5,13 +5,14 @@ import (
 	"github.com/stretchr/testify/suite"
 	"os"
 	"testing"
+	"github.com/stretchr/testify/assert"
 )
 
-type AMQPJSONTestSuite struct {
+type AMQPTestSuite struct {
 	baseSuite
 }
 
-func (suite *AMQPJSONTestSuite) SetupTest() {
+func (suite *AMQPTestSuite) SetupTest() {
 	host, _ := os.LookupEnv("TESTS_HOST")
 	b, err := NewAMQPBackend("amqp://guest:guest@" + host + ":5672")
 
@@ -19,33 +20,15 @@ func (suite *AMQPJSONTestSuite) SetupTest() {
 		fmt.Printf("amqp err: %v\n", err)
 	}
 
-	b.Codec(NewJSONCodec())
-	Init(b)
+	Use(b)
 }
 
-func TestAMQPJSONTestSuite(t *testing.T) {
-	// TODO for some reason json tests won't pass on circleci
-	if _, ok := os.LookupEnv("CIRCLECI"); !ok {
-		suite.Run(t, new(AMQPJSONTestSuite))
-	}
-
+func TestAMQPTestSuite(t *testing.T) {
+	suite.Run(t, new(AMQPTestSuite))
 }
 
-type AMQPGOBTestSuite struct {
-	baseSuite
-}
-
-func (suite *AMQPGOBTestSuite) SetupTest() {
-	host, _ := os.LookupEnv("TESTS_HOST")
-	b, err := NewAMQPBackend("amqp://guest:guest@" + host + ":5672")
-
-	if err != nil {
-		fmt.Printf("amqp err: %v\n", err)
-	}
-
-	Init(b)
-}
-
-func TestAMQPGOBTestSuite(t *testing.T) {
-	suite.Run(t, new(AMQPGOBTestSuite))
+func TestInvalidAMQPUrl(t *testing.T) {
+	b, err := NewAMQPBackend("https://google.com")
+	assert.NotNil(t, err)
+	assert.Nil(t, b)
 }

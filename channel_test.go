@@ -10,7 +10,7 @@ type ChannelTestSuite struct {
 }
 
 func (suite *ChannelTestSuite) SetupTest() {
-	Init(NewChannelBackend())
+	Use(NewChannelBackend())
 }
 
 func TestChannelTestSuite(t *testing.T) {

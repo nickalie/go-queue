@@ -8,17 +8,15 @@ import (
 // ChannelBackend uses go channels to manage queues
 // Suitable for multithreaded single process environment
 type ChannelBackend struct {
-	*sync.RWMutex
+	*sync.Mutex
 	channels map[string]chan interface{}
 	buffer   int
 }
 
 // NewChannelBackend creates new channels backend
 func NewChannelBackend() *ChannelBackend {
-	return &ChannelBackend{
-		RWMutex:    &sync.RWMutex{},
-		channels: make(map[string]chan interface{}),
-		buffer:   1000}
+	b := &ChannelBackend{Mutex: &sync.Mutex{}}
+	return b.Channels(make(map[string]chan interface{})).Buffer(1000)
 }
 
 // Channels sets initial channels (queues). Key - queue name, value - go channel

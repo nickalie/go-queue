@@ -19,7 +19,8 @@ func NewStompBackend(addr string, opts ...func(*stomp.Conn) error) (*StompBacken
 		return nil, err
 	}
 
-	return &StompBackend{conn: conn, codec: NewGOBCodec()}, nil
+	b := &StompBackend{conn: conn}
+	return b.Codec(NewGOBCodec()), nil
 }
 
 // Codec sets codec to encode/decode objects in queues. GOBCodec is default.

@@ -8,8 +8,8 @@ type Backend interface {
 
 var b Backend = NewChannelBackend()
 
-// Init sets backend to manage queues. ChannelBackend is default.
-func Init(value Backend) {
+// Use sets backend to manage queues. ChannelBackend is default.
+func Use(value Backend) {
 	b = value
 }
 

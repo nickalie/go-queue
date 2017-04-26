@@ -8,47 +8,12 @@ import (
 	"testing"
 )
 
-type BuntJSONTestSuite struct {
+type BuntTestSuite struct {
 	baseSuite
 	b *BuntBackend
 }
 
-func (suite *BuntJSONTestSuite) SetupTest() {
-
-	if suite.b != nil {
-		err := suite.b.Close()
-
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
-	os.Remove("data.db")
-
-	b, err := NewBuntBackend("data.db")
-
-	if err != nil {
-		fmt.Printf("bunt err: %v\n", err)
-	}
-
-	b.Codec(NewJSONCodec())
-	Init(b)
-	suite.b = b
-}
-
-func TestBuntJSONTestSuite(t *testing.T) {
-	// TODO for some reason json tests won't pass on circleci
-	if _, ok := os.LookupEnv("CIRCLECI"); !ok {
-		suite.Run(t, new(BuntJSONTestSuite))
-	}
-}
-
-type BuntGOBTestSuite struct {
-	baseSuite
-	b *BuntBackend
-}
-
-func (suite *BuntGOBTestSuite) SetupTest() {
+func (suite *BuntTestSuite) SetupTest() {
 
 	if suite.b != nil {
 		err := suite.b.Close()
@@ -68,9 +33,9 @@ func (suite *BuntGOBTestSuite) SetupTest() {
 
 	suite.b = b
 
-	Init(b)
+	Use(b)
 }
 
-func TestBuntGOBTestSuite(t *testing.T) {
-	suite.Run(t, new(BuntGOBTestSuite))
+func TestBuntTestSuite(t *testing.T) {
+	suite.Run(t, new(BuntTestSuite))
 }

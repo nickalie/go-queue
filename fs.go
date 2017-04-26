@@ -25,7 +25,9 @@ type FSBackend struct {
 
 // NewFSBackend creates new FSBackend.
 func NewFSBackend(path string) (*FSBackend, error) {
-	return &FSBackend{path: path, codec: NewGOBCodec(), interval: time.Second}, nil
+	b := &FSBackend{path: path}
+
+	return b.Codec(NewGOBCodec()).Interval(time.Second), nil
 }
 
 // Codec sets codec to encode/decode objects in queues. GOBCodec is default.
@@ -106,7 +108,7 @@ func (b *FSBackend) Get(queueName string, value interface{}) error {
 		}
 
 		if err != nil {
-			time.Sleep(time.Second)
+			time.Sleep(b.interval)
 		} else {
 			return nil
 		}

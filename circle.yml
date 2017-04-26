@@ -13,8 +13,8 @@ machine:
     - sudo tar -C /usr/local -xzf downloads/$GODIST
 test:
   pre:
-    - docker run -p 61613:61613 -d byteflair/rabbitmq-stomp
+    - docker run -p 61613:61613 -e RABBITMQ_DEFAULT_VHOST=127.0.0.1 -d byteflair/rabbitmq-stomp
   override:
-    - go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+    - go test -v -coverprofile=coverage.txt -covermode=atomic ./...
   post:
     - bash <(curl -s https://codecov.io/bash)

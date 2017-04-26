@@ -5,13 +5,14 @@ import (
 	"github.com/stretchr/testify/suite"
 	"os"
 	"testing"
+	"github.com/stretchr/testify/assert"
 )
 
-type StompJSONTestSuite struct {
+type StompTestSuite struct {
 	baseSuite
 }
 
-func (suite *StompJSONTestSuite) SetupTest() {
+func (suite *StompTestSuite) SetupTest() {
 	host, _ := os.LookupEnv("TESTS_HOST")
 	b, err := NewStompBackend(host + ":61613")
 
@@ -19,35 +20,15 @@ func (suite *StompJSONTestSuite) SetupTest() {
 		fmt.Printf("stomp err: %v\n", err)
 	}
 
-	b.Codec(NewJSONCodec())
-	Init(b)
+	Use(b)
 }
 
-func TestStompJSONTestSuite(t *testing.T) {
-	// TODO find a way to run stomp server on circleci
-	if _, ok := os.LookupEnv("CIRCLECI"); !ok {
-		suite.Run(t, new(StompJSONTestSuite))
-	}
+func TestStompTestSuite(t *testing.T) {
+	suite.Run(t, new(StompTestSuite))
 }
 
-type StompGOBTestSuite struct {
-	baseSuite
-}
-
-func (suite *StompGOBTestSuite) SetupTest() {
-	host, _ := os.LookupEnv("TESTS_HOST")
-	b, err := NewStompBackend(host + ":61613")
-
-	if err != nil {
-		fmt.Printf("stomp err: %v\n", err)
-	}
-
-	Init(b)
-}
-
-func TestStompGOBTestSuite(t *testing.T) {
-	// TODO find a way to run stomp server on circleci
-	if _, ok := os.LookupEnv("CIRCLECI"); !ok {
-		suite.Run(t, new(StompGOBTestSuite))
-	}
+func TestInvalidStompUrl(t *testing.T) {
+	b, err := NewStompBackend("https://google.com")
+	assert.NotNil(t, err)
+	assert.Nil(t, b)
 }
