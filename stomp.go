@@ -58,3 +58,7 @@ func (b *StompBackend) Get(queueName string, v interface{}) error {
 
 	return b.codec.Unmarshal(msg.Body, v)
 }
+
+func (b *StompBackend) RemoveQueue(queueName string) error {
+	return nil
+}

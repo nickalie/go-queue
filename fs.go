@@ -115,6 +115,11 @@ func (b *FSBackend) Get(queueName string, v interface{}) error {
 	}
 }
 
+func (b *FSBackend) RemoveQueue(queueName string) error {
+	dir := filepath.Join(b.path, queueName)
+	return os.RemoveAll(dir)
+}
+
 func (b *FSBackend) readFile(l *lock, fileName string, value interface{}) error {
 	data, err := ioutil.ReadFile(fileName)
 

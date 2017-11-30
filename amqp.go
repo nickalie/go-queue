@@ -110,3 +110,7 @@ func (b *AMQPBackend) Get(queueName string, v interface{}) error {
 
 	return b.codec.Unmarshal(d.Body, v)
 }
+
+func (b *AMQPBackend) RemoveQueue(queueName string) error {
+	return nil
+}

@@ -93,6 +93,10 @@ func (b *BuntBackend) Get(queueName string, v interface{}) error {
 	return b.codec.Unmarshal([]byte(value), v)
 }
 
+func (b *BuntBackend) RemoveQueue(queueName string) error  {
+	return nil
+}
+
 // Close closes buntdb
 func (b *BuntBackend) Close() error {
 	return b.db.Close()

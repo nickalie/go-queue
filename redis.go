@@ -55,3 +55,8 @@ func (b *RedisBackend) Get(queueName string, v interface{}) error {
 
 	return b.codec.Unmarshal(d[1], v)
 }
+
+func (b *RedisBackend) RemoveQueue(queueName string) error {
+	_, err := b.pool.Get().Do("DEL", queueName)
+	return err
+}

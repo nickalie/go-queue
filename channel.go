@@ -45,6 +45,13 @@ func (b *ChannelBackend) Get(queueName string, v interface{}) error {
 	return nil
 }
 
+func (b *ChannelBackend) RemoveQueue(queueName string) error  {
+	b.Lock()
+	defer b.Unlock()
+	delete(b.channels, queueName)
+	return nil
+}
+
 func (b *ChannelBackend) getChannel(queueName string) chan interface{} {
 	b.Lock()
 	defer b.Unlock()

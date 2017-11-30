@@ -101,6 +101,10 @@ func (b *BeanstalkBackend) Get(queueName string, value interface{}) error {
 	}
 }
 
+func (b *BeanstalkBackend) RemoveQueue(queueName string) error  {
+	return nil
+}
+
 func (b *BeanstalkBackend) getConn() (*beanstalk.Conn, error) {
 	o, err := b.pool.BorrowObject()
 
