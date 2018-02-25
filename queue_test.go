@@ -9,6 +9,7 @@ import (
 	"sync"
 	"testing"
 	"time"
+	"errors"
 )
 
 type concurrentStringSlice struct {
@@ -196,7 +197,7 @@ func (suite *baseSuite) TestObject() {
 	var result testUser
 	err = Get(key, &result)
 	assert.Nil(t, err)
-	assert.Equal(t, value, result)
+	assert.Nil(t, equalUsers(value, result))
 }
 
 func (suite *baseSuite) TestObjectAsync() {
@@ -214,7 +215,7 @@ func (suite *baseSuite) TestObjectAsync() {
 	var result testUser
 	err := Get(key, &result)
 	assert.Nil(t, err)
-	assert.Equal(t, value, result)
+	assert.Nil(t, equalUsers(value, result))
 }
 
 func (suite *baseSuite) TestObjectError() {
@@ -227,7 +228,7 @@ func (suite *baseSuite) TestObjectError() {
 	var result testUser
 	err = Get(key, &result)
 	assert.Nil(t, err)
-	assert.NotEqual(t, value, result)
+	assert.NotNil(t, equalUsers(value, result))
 }
 
 func init() {
@@ -310,5 +311,62 @@ func randCompany() testCompany {
 	}
 
 	return testCompany{Name: randString(20), Domains: domains}
+}
 
+func equalUsers(user1, user2 testUser) error {
+	if user1.Name != user2.Name {
+		return errors.New("user names should be equal")
+	}
+
+	if user1.Address != user2.Address {
+		return errors.New("user addresses should be equal")
+	}
+
+	if !user1.Birthday.Equal(user2.Birthday) {
+		return errors.New("user birthdays should be equal")
+	}
+
+	if user1.Duration != user2.Duration {
+		return errors.New("user durations should be equal")
+	}
+
+	if user1.Count != user2.Count {
+		return errors.New("user counts should be equal")
+	}
+
+	if user1.CountFloat != user2.CountFloat {
+		return errors.New("user countFloats should be equal")
+	}
+
+	if len(user1.Companies) != len(user2.Companies) {
+		return errors.New("user companies len should be equal")
+	}
+
+	for i, v := range user1.Companies {
+		err := equalCompanies(v, user2.Companies[i])
+
+		if err != nil {
+			return fmt.Errorf("user companies at index %d should be equal: %v", i, err)
+		}
+	}
+
+	return nil
+}
+
+func equalCompanies(company1, company2 testCompany) error {
+	if company1.Name != company2.Name {
+		return errors.New("company names should be equal")
+	}
+
+	if len(company1.Domains) != len(company2.Domains) {
+		return errors.New("company domains len should be equal")
+	}
+
+	for i, v := range company1.Domains {
+		if v != company2.Domains[i] {
+			return fmt.Errorf("company domains at index %d should be equal", i)
+		}
+	}
+
+	return nil
 }
