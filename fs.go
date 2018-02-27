@@ -21,6 +21,7 @@ type FSBackend struct {
 	path     string
 	codec    Codec
 	interval time.Duration
+	key      string
 }
 
 // NewFSBackend creates new FSBackend.
@@ -52,13 +53,9 @@ func (b *FSBackend) Put(queueName string, value interface{}) error {
 		return err
 	}
 
-	id, err := uniqueId()
+	b.key = increaseString(b.key)
 
-	if err != nil {
-		return err
-	}
-
-	fileName := filepath.Join(path, id)
+	fileName := filepath.Join(path, b.key)
 
 	l, err := getLock(path)
 

@@ -231,20 +231,6 @@ func (suite *baseSuite) TestObjectError() {
 	assert.NotNil(t, equalUsers(value, result))
 }
 
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
-var letterRunesLen = len(letterRunes)
-
-func randString(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(letterRunesLen)]
-	}
-	return string(b)
-}
 
 func randMap(keys int) map[string]interface{} {
 	m := make(map[string]interface{})
@@ -369,4 +355,19 @@ func equalCompanies(company1, company2 testCompany) error {
 	}
 
 	return nil
+}
+
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+const letterBytesLen = len(letterBytes)
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
+func randString(n int) string {
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(letterBytesLen)]
+	}
+	return string(b)
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/tidwall/buntdb"
 	"time"
+	"strings"
 )
 
 // BuntBackend provides BuntDB-based backend to manage queues.
@@ -13,6 +14,7 @@ type BuntBackend struct {
 	db       *buntdb.DB
 	codec    Codec
 	interval time.Duration
+	key      string
 }
 
 // NewBuntBackend creates new BuntBackend.
@@ -28,8 +30,15 @@ func NewBuntBackend(path string) (*BuntBackend, error) {
 
 // NewBuntBackendFromDB creates new BuntBackend from bunt.DB object.
 func NewBuntBackendFromDB(db *buntdb.DB) *BuntBackend {
-	b := &BuntBackend{db: db}
+	var key string
+	var err error
 
+	db.View(func(tx *buntdb.Tx) error {
+		key, err = tx.Get("baseKey")
+		return err
+	})
+	
+	b := &BuntBackend{db: db, key: key}
 	return b.Codec(NewGOBCodec()).Interval(time.Second)
 }
 
@@ -54,13 +63,9 @@ func (b *BuntBackend) Put(queueName string, value interface{}) error {
 	}
 
 	return b.db.Update(func(tx *buntdb.Tx) error {
-		id, err := uniqueId()
-
-		if err != nil {
-			return err
-		}
-
-		key := fmt.Sprintf("%s:%s", queueName, id)
+		b.key = increaseString(b.key)
+		key := fmt.Sprintf("%s:%s", queueName, b.key)
+		tx.Set("baseKey", b.key, nil)
 		_, _, err = tx.Set(key, string(data), nil)
 		return err
 	})
@@ -68,16 +73,26 @@ func (b *BuntBackend) Put(queueName string, value interface{}) error {
 
 // Get removes the first element from a queue and put it in the value pointed to by v
 func (b *BuntBackend) Get(queueName string, v interface{}) error {
+	queueName += ":"
 	var value string
 	var k string
 	for {
 		found := false
 		err := b.db.Update(func(tx *buntdb.Tx) error {
-			err := tx.AscendKeys(queueName+":*", func(key, value string) bool {
+			err := tx.Ascend("", func(key, value string) bool {
+				if strings.HasPrefix(key, queueName) {
+					k = key
+					found = true
+					return false
+				}
+
+				return true
+			})
+			/*err := tx.AscendKeys(queueName+":*", func(key, value string) bool {
 				k = key
 				found = true
 				return false
-			})
+			})*/
 
 			if err != nil {
 				return err
