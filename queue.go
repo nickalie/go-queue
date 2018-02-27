@@ -1,5 +1,9 @@
 package queue
 
+import (
+	"github.com/satori/go.uuid"
+)
+
 // Backend defines interface to manage queues. ChannelBackend is default.
 type Backend interface {
 	Put(queueName string, value interface{}) error
@@ -28,20 +32,16 @@ func RemoveQueue(queueName string) error {
 	return b.RemoveQueue(queueName)
 }
 
-func increaseString(value string) string {
-	if value == "" {
-		value = "a"
-	} else {
-		l := len(value)
-		r := value[l-1]
+func uniqueId() (string, error) {
+	var err error
 
-		if r < 122 {
-			r++
-			value = string(append([]byte(value)[:l-1], r))
-		} else {
-			value = string(append([]byte(value), 97))
+	for i := 0; i < 10; i++ {
+		r, err := uuid.NewV4()
+
+		if err == nil {
+			return r.String(), nil
 		}
 	}
 
-	return value
+	return "", err
 }

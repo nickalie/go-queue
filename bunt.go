@@ -12,7 +12,6 @@ import (
 type BuntBackend struct {
 	db       *buntdb.DB
 	codec    Codec
-	key      string
 	interval time.Duration
 }
 
@@ -24,9 +23,14 @@ func NewBuntBackend(path string) (*BuntBackend, error) {
 		return nil, err
 	}
 
+	return NewBuntBackendFromDB(db), nil
+}
+
+// NewBuntBackendFromDB creates new BuntBackend from bunt.DB object.
+func NewBuntBackendFromDB(db *buntdb.DB) *BuntBackend {
 	b := &BuntBackend{db: db}
 
-	return b.Codec(NewGOBCodec()).Interval(time.Second), nil
+	return b.Codec(NewGOBCodec()).Interval(time.Second)
 }
 
 // Codec sets codec to encode/decode objects in queues. GOBCodec is default.
@@ -50,9 +54,14 @@ func (b *BuntBackend) Put(queueName string, value interface{}) error {
 	}
 
 	return b.db.Update(func(tx *buntdb.Tx) error {
-		b.key = increaseString(b.key)
-		key := fmt.Sprintf("%s:%s", queueName, b.key)
-		_, _, err := tx.Set(key, string(data), nil)
+		id, err := uniqueId()
+
+		if err != nil {
+			return err
+		}
+
+		key := fmt.Sprintf("%s:%s", queueName, id)
+		_, _, err = tx.Set(key, string(data), nil)
 		return err
 	})
 }
@@ -93,7 +102,7 @@ func (b *BuntBackend) Get(queueName string, v interface{}) error {
 	return b.codec.Unmarshal([]byte(value), v)
 }
 
-func (b *BuntBackend) RemoveQueue(queueName string) error  {
+func (b *BuntBackend) RemoveQueue(queueName string) error {
 	return nil
 }
 

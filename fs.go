@@ -11,15 +11,15 @@ import (
 	"time"
 )
 
-var errFound = errors.New("Found")
-var errNotFound = errors.New("Not Found")
+var errFound = errors.New("found")
+var errNotFound = errors.New("not Found")
+var errLocked = errors.New("locked")
 
 // FSBackend uses file system to manage queues.
 // Suitable for multithreaded and multi-process environments.
 type FSBackend struct {
 	path     string
 	codec    Codec
-	key      string
 	interval time.Duration
 }
 
@@ -52,8 +52,13 @@ func (b *FSBackend) Put(queueName string, value interface{}) error {
 		return err
 	}
 
-	b.key = increaseString(b.key)
-	fileName := filepath.Join(path, b.key)
+	id, err := uniqueId()
+
+	if err != nil {
+		return err
+	}
+
+	fileName := filepath.Join(path, id)
 
 	l, err := getLock(path)
 
@@ -142,8 +147,6 @@ func (b *FSBackend) readFile(l *lock, fileName string, value interface{}) error 
 
 	return b.codec.Unmarshal(data, value)
 }
-
-var errLocked = errors.New("Locked")
 
 type lock struct {
 	path string
