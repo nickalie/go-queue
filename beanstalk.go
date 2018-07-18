@@ -1,10 +1,12 @@
 package queue
 
 import (
-	"github.com/jolestar/go-commons-pool"
-	"github.com/kr/beanstalk"
+	"context"
 	"sync"
 	"time"
+
+	"github.com/jolestar/go-commons-pool"
+	"github.com/kr/beanstalk"
 )
 
 var poolTubes = sync.Pool{
@@ -22,13 +24,15 @@ var poolTubeSets = sync.Pool{
 // BeanstalkBackend provides beanstalk-based backend to manage queues.
 // Suitable for multi-host, multi-process and multithreaded environment
 type BeanstalkBackend struct {
-	pool  *pool.ObjectPool
-	codec Codec
+	pool        *pool.ObjectPool
+	codec       Codec
+	poolContext context.Context
 }
 
 // NewBeanstalkBackend creates new BeanstalkBackend
 func NewBeanstalkBackend(addr string) (*BeanstalkBackend, error) {
-	b := &BeanstalkBackend{pool: getBeanstalkPool(addr)}
+	ctx := context.Background()
+	b := &BeanstalkBackend{pool: getBeanstalkPool(ctx, addr), poolContext: ctx}
 	return b.Codec(NewGOBCodec()), nil
 }
 
@@ -46,7 +50,7 @@ func (b *BeanstalkBackend) Put(queueName string, value interface{}) error {
 		return err
 	}
 
-	defer b.pool.ReturnObject(conn)
+	defer b.pool.ReturnObject(b.poolContext, conn)
 
 	data, err := b.codec.Marshal(value)
 
@@ -71,7 +75,7 @@ func (b *BeanstalkBackend) Get(queueName string, value interface{}) error {
 		return err
 	}
 
-	defer b.pool.ReturnObject(conn)
+	defer b.pool.ReturnObject(b.poolContext, conn)
 
 	tube := poolTubeSets.Get().(*beanstalk.TubeSet)
 	defer poolTubeSets.Put(tube)
@@ -101,12 +105,12 @@ func (b *BeanstalkBackend) Get(queueName string, value interface{}) error {
 	}
 }
 
-func (b *BeanstalkBackend) RemoveQueue(queueName string) error  {
+func (b *BeanstalkBackend) RemoveQueue(queueName string) error {
 	return nil
 }
 
 func (b *BeanstalkBackend) getConn() (*beanstalk.Conn, error) {
-	o, err := b.pool.BorrowObject()
+	o, err := b.pool.BorrowObject(b.poolContext)
 
 	if err != nil {
 		return nil, err
@@ -115,17 +119,18 @@ func (b *BeanstalkBackend) getConn() (*beanstalk.Conn, error) {
 	return o.(*beanstalk.Conn), nil
 }
 
-func getBeanstalkPool(addr string) *pool.ObjectPool {
+func getBeanstalkPool(ctx context.Context, addr string) *pool.ObjectPool {
 	config := pool.NewDefaultPoolConfig()
 	config.MaxTotal = -1
-	config.SoftMinEvictableIdleTimeMillis = 1000 * 60
-	config.TimeBetweenEvictionRunsMillis = 1000 * 60
+	// config.SoftMinEvictableIdleTimeMillis = 1000 * 60
+	// config.TimeBetweenEvictionRunsMillis = 1000 * 60
 	return pool.NewObjectPool(
+		ctx,
 		pool.NewPooledObjectFactory(
-			func() (interface{}, error) {
+			func(ctx context.Context) (interface{}, error) {
 				return beanstalk.Dial("tcp", addr)
 			},
-			func(object *pool.PooledObject) error {
+			func(ctx context.Context, object *pool.PooledObject) error {
 				c := object.Object.(*beanstalk.Conn)
 				return c.Close()
 			},
