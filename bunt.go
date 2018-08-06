@@ -15,6 +15,7 @@ type BuntBackend struct {
 	codec    Codec
 	interval time.Duration
 	key      string
+	ttl      time.Duration
 }
 
 // NewBuntBackend creates new BuntBackend.
@@ -37,7 +38,7 @@ func NewBuntBackendFromDB(db *buntdb.DB) *BuntBackend {
 		key, err = tx.Get("baseKey")
 		return err
 	})
-	
+
 	b := &BuntBackend{db: db, key: key}
 	return b.Codec(NewGOBCodec()).Interval(time.Second)
 }
@@ -54,6 +55,12 @@ func (b *BuntBackend) Interval(interval time.Duration) *BuntBackend {
 	return b
 }
 
+// TTL sets message expiration time. Default is 0 - message will never expire
+func (b *BuntBackend) TTL(ttl time.Duration) *BuntBackend {
+	b.ttl = interval
+	return b
+}
+
 // Put adds value to the end of a queue.
 func (b *BuntBackend) Put(queueName string, value interface{}) error {
 	data, err := b.codec.Marshal(value)
@@ -66,7 +73,13 @@ func (b *BuntBackend) Put(queueName string, value interface{}) error {
 		b.key = increaseString(b.key)
 		key := fmt.Sprintf("%s:%s", queueName, b.key)
 		tx.Set("baseKey", b.key, nil)
-		_, _, err = tx.Set(key, string(data), nil)
+		var opts *buntdb.SetOptions
+
+		if b.ttl > 0 {
+			opts = &buntdb.SetOptions{Expires:true, TTL:b.ttl})
+		}
+
+		_, _, err = tx.Set(key, string(data), opts)
 		return err
 	})
 }
@@ -88,11 +101,6 @@ func (b *BuntBackend) Get(queueName string, v interface{}) error {
 
 				return true
 			})
-			/*err := tx.AscendKeys(queueName+":*", func(key, value string) bool {
-				k = key
-				found = true
-				return false
-			})*/
 
 			if err != nil {
 				return err
