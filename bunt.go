@@ -57,7 +57,7 @@ func (b *BuntBackend) Interval(interval time.Duration) *BuntBackend {
 
 // TTL sets message expiration time. Default is 0 - message will never expire
 func (b *BuntBackend) TTL(ttl time.Duration) *BuntBackend {
-	b.ttl = interval
+	b.ttl = ttl
 	return b
 }
 
@@ -76,7 +76,7 @@ func (b *BuntBackend) Put(queueName string, value interface{}) error {
 		var opts *buntdb.SetOptions
 
 		if b.ttl > 0 {
-			opts = &buntdb.SetOptions{Expires:true, TTL:b.ttl})
+			opts = &buntdb.SetOptions{Expires:true, TTL:b.ttl}
 		}
 
 		_, _, err = tx.Set(key, string(data), opts)
